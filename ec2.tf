@@ -23,3 +23,14 @@ resource "aws_security_group" "allow_ssh" {
     ipv6_cidr_blocks = ["::/0"]
   }
 }
+
+resource "aws_instance" "terraform" {
+  ami                    = "ami-0953476d60561c955"
+  instance_type          = "t2.micro"
+  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
+  subnet_id              = "subnet-08439c192ee2373b4"
+
+  tags = {
+    Name = "Terraform"
+  }
+}
