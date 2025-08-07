@@ -1,11 +1,18 @@
 resource "aws_instance" "terraform" {
+  count                  = length(var.instance_names)
   ami                    = "ami-08a6efd148b1f7504"
-  instance_type          = var.environment == "prod" ? "t3.micro" : "t2.micro"
+  instance_type          = "t3.micro"
   vpc_security_group_ids = [aws_security_group.allow_ssh.id]
   subnet_id              = "subnet-02958fb7c88ba45a2"
-  tags = {
-    Name = "HelloWorld"
-  }
+  #   tags = {
+  #     Name = var.instance_names[count.index]
+  #   }
+  tags = merge(
+    var.common_tags,
+    {
+      Name = var.instance_names[count.index]
+    }
+  )
 }
 
 resource "aws_security_group" "allow_ssh" {
@@ -13,9 +20,16 @@ resource "aws_security_group" "allow_ssh" {
   description = "Allow ssh from port 22"
   vpc_id      = "vpc-0b49d3937073325d1"
 
-  tags = {
-    Name = "allow_ssh_terraform"
-  }
+  #   tags = {
+  #     Name = "allow_ssh_terraform"
+  #   }
+
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "allow-ssh"
+    }
+  )
 
 
   egress {

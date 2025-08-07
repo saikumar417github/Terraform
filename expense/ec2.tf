@@ -1,10 +1,12 @@
 resource "aws_instance" "terraform" {
-  ami                    = "ami-08a6efd148b1f7504"
-  instance_type          = var.environment == "prod" ? "t3.micro" : "t2.micro"
-  vpc_security_group_ids = [aws_security_group.allow_ssh.id]
-  subnet_id              = "subnet-02958fb7c88ba45a2"
+  count                       = length(var.instance_names)
+  ami                         = "ami-09c813fb71547fc4f"
+  instance_type               = var.instance_names[count.index] == "mysql" ? "t3.micro" : "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.allow_ssh.id]
+  associate_public_ip_address = true
+  subnet_id                   = "subnet-02958fb7c88ba45a2"
   tags = {
-    Name = "HelloWorld"
+    Name = var.instance_names[count.index]
   }
 }
 
